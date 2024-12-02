@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="theme-color" content="#0e46a3" />
+  <title>Workout Tracker - Made By Chiranjit Karmakar</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <style>
+    :root {
+  --gap: 10px; /* Adjust gap value as needed */
+}
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body {
+  font-family: "Funnel Sans", sans-serif;
+  background: #f4f4f9;
+  color: #333;
+  margin: 0 15px;
+  padding: 0;
+}
+
+.container {
+  width: min(600px, 100%);
+  margin-inline: auto;
+  margin-block: 15px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.gap-10 {
+  gap: var(--gap);
+}
+
+.w-50 {
+  width: calc(50% - calc(var(--gap) / 2));
+}
+
+.w-33 {
+  width: calc(33.33% - calc(var(--gap) * 2 / 3));
+}
+
+.w-100 {
+  width: 100%;
+}
+
+hr {
+  border-top: 1px solid #e2e8f0;
+  border-bottom: none;
+  margin-block: 15px;
+}
+
+h1,
+h2 {
+  position: relative;
+  font-size: clamp(1rem, 0.8148rem + 0.9877vw, 2rem);
+  text-align: left;
+  font-size: 15px;
+  color: #0e46a3;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: #fff;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+form input,
+form button {
+  font-family: inherit;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form input:focus {
+  border: 1px solid #0e46a3;
+  outline: none;
+}
+
+form button {
+  font-family: inherit;
+  background: #0e46a3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+}
+
+form button:hover {
+  background: #0e46a3;
+}
+
+#workoutList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#workoutStats {
+  margin-top: 20px;
+  padding: 0;
+}
+
+#workoutStats > p {
+  font-family: inherit;
+  font-size: clamp(0.875rem, 0.8287rem + 0.2469vw, 1.125rem);
+  padding: 0;
+  margin: 7px 0;
+}
+
+#workoutStats > p > strong {
+  color: #0e46a3;
+  font-weight: 600;
+}
+
+.workout-item {
+  background: #f7fafc;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.workout-item .date {
+  font-size: 11px;
+  color: #fff;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  background-color: #0e46a3;
+  padding: 4px 10px;
+}
+
+.workout-item .workout-title {
+  font-size: clamp(0.875rem, 0.8056rem + 0.3704vw, 1.25rem);
+  color: #0e46a3;
+  font-weight: 700;
+}
+
+.workout-item .meta-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.workout-item .meta-items span {
+  font-size: 13px;
+}
+
+.workout-item .meta-items span > strong {
+  font-weight: 500;
+}
+
+.action-btns {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.delete-btn {
+  font-family: inherit;
+  width: 100%;
+  background: #f7fafc;
+  border: 1px solid #da0037;
+  color: #da0037;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.delete-btn:hover {
+  background: #da0037;
+  color: #fff;
+}
+
+.view-chart-btn {
+  font-family: inherit;
+  width: 100%;
+  background-color: #0e46a3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#refreshChart {
+  width: 100%;
+  font-family: inherit;
+  background-color: #0e46a3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 575px) {
+  .workout-item {
+    width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Workout Tracker</h1>
+  <form id="workoutForm">
+    <input type="text" name="exercise" placeholder="Exercise Name" class="w-50" required>
+    <input type="date" name="date" id="pickup_datetime" class="w-50" required>
+    <input type="number" name="sets" placeholder="Sets" class="w-33" required>
+    <input type="number" name="reps" placeholder="Reps" class="w-33" required>
+    <input type="number" name="weight" placeholder="Weight (kg)" class="w-33" required>
+    <button type="submit" class="w-100">Add Workout</button>
+  </form>
+
+  <hr>
+  <h2>Workouts</h2>
+  <ul id="workoutList"></ul>
+
+  <hr>
+
+  <h2>Statistics</h2>
+  <div id="workoutStats"></div>
+
+  <hr>
+  <div id="chartContainer" style="display: none;">
+    <h2>Exercise Chart</h2>
+    <canvas id="exerciseChart"></canvas>
+    <button id="refreshChart" onclick="renderWorkouts()">Refresh List</button>
+  </div>
+</div>
+
+
+  <script>
+    // Select DOM Elements
+const workoutForm = document.getElementById("workoutForm");
+const workoutList = document.getElementById("workoutList");
+const workoutStats = document.getElementById("workoutStats");
+const chartContainer = document.getElementById("chartContainer");
+let chartInstance = null; // Store chart instance
+
+// Initialize workouts array
+let workouts = JSON.parse(localStorage.getItem("workouts")) || [];
+
+// Function to save workouts to localStorage
+function saveToLocalStorage() {
+  localStorage.setItem("workouts", JSON.stringify(workouts));
+}
+
+// Function to render workouts
+function renderWorkouts() {
+  workoutList.innerHTML = ""; // Clear previous content
+
+  workouts.forEach((workout, index) => {
+    const listItem = document.createElement("li");
+    listItem.className = "workout-item w-50";
+    listItem.innerHTML = `
+  <div class="date">${workout.date}</div>
+  <div class="workout-title">${workout.exercise}</div>
+  <div class="meta-items">
+    <span><strong>Sets:</strong> ${workout.sets}</span>
+    <span><strong>Reps:</strong> ${workout.reps}</span>
+    <span><strong>Weight:</strong> ${workout.weight}kg</span>
+  </div>
+  <div class="action-btns">
+    <button class="delete-btn" onclick="deleteWorkout(${index})">Delete</button>
+    <button class="view-chart-btn" onclick="showExerciseChart('${workout.exercise}')">View Chart</button>
+  </div>
+
+        `;
+    workoutList.appendChild(listItem);
+  });
+}
+
+// Function to calculate workout statistics
+function renderWorkoutStats() {
+  const stats = {};
+  workouts.forEach((workout) => {
+    if (!stats[workout.exercise]) {
+      stats[workout.exercise] = new Set();
+    }
+    stats[workout.exercise].add(workout.date);
+  });
+
+  workoutStats.innerHTML = ""; // Clear previous stats
+  for (const [exercise, dates] of Object.entries(stats)) {
+    const statItem = document.createElement("p");
+    statItem.innerHTML = `<strong>${exercise}</strong>: Performed on <strong>${dates.size}</strong> different day(s).`;
+    workoutStats.appendChild(statItem);
+  }
+}
+
+// Function to handle form submission
+function addWorkout(event) {
+  event.preventDefault(); // Prevent page reload
+
+  // Get form values
+  const exercise = workoutForm.exercise.value;
+  const date = workoutForm.date.value;
+  const sets = workoutForm.sets.value;
+  const reps = workoutForm.reps.value;
+  const weight = workoutForm.weight.value;
+
+  // Validate input
+  if (!exercise || !date || !sets || !reps || !weight) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  // Add workout to the array
+  const newWorkout = { exercise, date, sets, reps, weight };
+  workouts.push(newWorkout);
+
+  // Save to localStorage and render the updated list and stats
+  saveToLocalStorage();
+  renderWorkouts();
+  renderWorkoutStats();
+
+  // Reset the form
+  workoutForm.reset();
+}
+
+// Function to delete a workout
+function deleteWorkout(index) {
+  workouts.splice(index, 1); // Remove workout by index
+  saveToLocalStorage(); // Update localStorage
+  renderWorkouts(); // Update the list
+  renderWorkoutStats(); // Update stats
+}
+
+// Function to show a chart for a specific exercise
+function showExerciseChart(exercise) {
+  const exerciseData = workouts.filter(
+    (workout) => workout.exercise === exercise
+  );
+
+  // Prepare data for Chart.js
+  const labels = exerciseData.map((workout) => workout.date);
+  const weights = exerciseData.map((workout) => parseInt(workout.weight, 10));
+
+  // If there's an existing chart instance, destroy it
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  // Create a new chart
+  const ctx = document.getElementById("exerciseChart").getContext("2d");
+  chartInstance = new Chart(ctx, {
+    type: "line", // Line chart for progression
+    data: {
+      labels,
+      datasets: [
+        {
+          label: `Weight Progression for ${exercise}`,
+          data: weights,
+          borderColor: "#5a67d8",
+          backgroundColor: "rgba(90, 103, 216, 0.2)",
+          fill: true,
+          tension: 0.2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true
+        }
+      }
+    }
+  });
+
+  // Show the chart container
+  chartContainer.style.display = "block";
+}
+
+// Initialize the app
+renderWorkouts();
+renderWorkoutStats();
+
+// Attach event listener to the form
+workoutForm.addEventListener("submit", addWorkout);
+
+//Calander
+// jQuery(function () {
+//   jQuery("#pickup_datetime").datepicker({
+//     minDate: 0, // Disable past dates
+//     dateFormat: "yy-mm-dd", // Format date as YYYY-MM-DD
+//     maxDate: new Date(new Date().setMonth(new Date().getMonth() + 2)) // Allow up to 2 months ahead
+//   });
+// });
+
+  </script>
+
+
+  
+</body>
+</html>
